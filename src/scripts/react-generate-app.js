@@ -6,10 +6,23 @@
 
 import path from 'path';
 import pascalCase from 'pascal-case';
+import { argv } from 'yargs';
 import Logger from '../Logger';
 import Directory from '../Directory';
 import PackageJson from '../PackageJson';
 import Files from '../Files';
+
+const { _: args } = argv;
+
+if (args.length !== 1) {
+  Logger.error('create-app requires the application name as its first argument.');
+  Logger.spacing();
+  Logger.info('Usage:\treactors create-app [ApplicationName] [options]');
+
+  process.exit(1);
+}
+
+CreateApp(args[0]);
 
 function CreateApp(ApplicationName, extraGenerators = []) {
 
@@ -58,12 +71,19 @@ function CreateApp(ApplicationName, extraGenerators = []) {
   copyServer.err && copyError(copyServer);
   Logger.success(`Copied server files to ${copyServer.target}.`);
 
-  const copyWepbackConfig = Files.copyTemplate(
+  const copyWebpackConfig = Files.copyTemplate(
     path.resolve(__dirname, '../../templates/webpack.config.js'),
     path.resolve(appDirectory, 'webpack.config.js')
   );
-  copyWepbackConfig.err && copyError(copyWepbackConfig.err);
-  Logger.success(`Copied Webpack config to ${copyWepbackConfig.target}.`)
+  copyWebpackConfig.err && copyError(copyWebpackConfig.err);
+  Logger.success(`Copied Webpack config to ${copyWebpackConfig.target}.`)
+
+  const copyBabelRc = Files.copyTemplate(
+    path.resolve(__dirname, '../../templates/.babelrc'),
+    path.resolve(appDirectory, '.babelrc')
+  );
+  copyBabelRc.err && copyError(copyBabelRc.err);
+  Logger.success(`Copied Babel config to ${copyBabelRc.target}.`)
 
   const mkdirSrc = Directory.mkdir(appDirectory, 'src');
   const srcDirectory = mkdirSrc.target;
@@ -82,6 +102,21 @@ function CreateApp(ApplicationName, extraGenerators = []) {
   );
   copyIndexHtml.err && copyError(copyIndexHtml.err);
   Logger.success(`Copied index.html file to ${copyIndexHtml.target}.`);
+
+  const mkdirContainers = Directory.mkdir(srcDirectory, 'containers');
+  const containersDirectory = mkdirContainers.target;
+  mkdirContainers.err && mkdirError(mkdirContainers.err, containersDirectory);
+
+  const copyAppContainer = Files.copyTemplate(
+    path.resolve(__dirname, '../../templates/src/containers/App.js'),
+    path.resolve(containersDirectory, 'App.js')
+  );
+  copyAppContainer.err && copyError(copyAppContainer.err);
+  Logger.success(`Copied App container in ${copyAppContainer.target}.`);
+
+  Logger.spacing();
+
+  Logger.success(`Succesfully generated app ${ApplicationName}.`);
 }
 
 function mkdirError(err, target) {
@@ -96,5 +131,3 @@ function mkdirError(err, target) {
 function copyError(err) {
   throw err.originalError;
 }
-
-CreateApp('Test');

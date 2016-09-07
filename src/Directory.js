@@ -14,7 +14,10 @@ export function mkdir(basePath, target) {
     fs.mkdirSync(targetPath);
   } catch (e) {
     return Object.assign({}, baseReturn, {
-      err: e.code === 'EEXIST' ? ALREADY_EXISTS_ERROR : UNKNOWN_ERROR,
+      err: {
+        type: e.code === 'EEXIST' ? ALREADY_EXISTS_ERROR : UNKNOWN_ERROR,
+        originalError: e,
+      },
     });
   }
 

@@ -17,6 +17,25 @@ The idea behind the first version of the generate-component script is to automat
 
 It is also necessary to change the storybook config to add the new component (TODO).
 
+### Application level
+
+The application level is the base of the application, using the modules' components, and implementing their redux reducers, etc.
+
+```
+|--- .babelrc             # Babel configuration, default to es2015, stage-0 and react presets
+|--- index.html           # HTML entry point
+|--- package.json
+|--- server.js            # run webpack-dev-server
+|--- webpack.config.js
+|--- src/
+    |--- index.js         # JS app entry point, render the React application
+    |--- containers/
+        |--- App.js       # The application container
+    |
+    |--- Module1/
+    |--- Module2/
+```
+
 ## Usage
 
 The usage is very basic for now.

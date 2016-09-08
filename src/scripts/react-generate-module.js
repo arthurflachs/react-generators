@@ -1,6 +1,19 @@
+import { argv } from 'yargs';
 import Logger from '../Logger';
 import Directory from '../Directory';
 import Files from '../Files';
+
+const { _: args } = argv;
+
+if (args.length !== 1) {
+  Logger.error('create-module requires the module name as its first argument.');
+  Logger.spacing();
+  Logger.info('Usage:\treactors create-module [ModuleName] [options]');
+
+  process.exit(1);
+}
+
+CreateModule(args[0]);
 
 function CreateModule(ModuleName) {
   Logger.spacing();
@@ -28,5 +41,3 @@ function CreateModule(ModuleName) {
 
   Logger.spacing();
 }
-
-CreateModule('Module1');
